@@ -134,12 +134,16 @@ file = nil
 
 -- Settings
 parse("sv_password " .. CONFIG.PASSWORD)
-parse("sv_daylighttime 210")
+parse("sv_fow 0")
+parse("sv_usgnonly 1")
 parse("sv_gm 1")
 
+parse("mp_maxclientsip 2")
+parse("mp_idlekick 0")
 parse("mp_hudscale 1")
 parse("mp_hud 64")
 parse("mp_radar 0")
+parse("mp_flashlight 0")
 parse("mp_infammo 1")
 parse("mp_deathdrop 4")
 

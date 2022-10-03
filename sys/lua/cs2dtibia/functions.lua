@@ -248,14 +248,22 @@ function saveserver()
 		local text = "TMPHOUSES[" .. table.val_to_str(k) .. "] = " .. table.val_to_str(v) .. "\n"
 		file:write(text)
 	end
+
 	file:close()
 	
 	for _, id in ipairs(player(0, 'table')) do
 		if PLAYERS[id] and PLAYERS[id].tmp then
+			local tmp = deepcopy(PLAYERS[id].tmp)
+			PLAYERS[id].tmp = nil
+
 			saveplayer(id)
+
+			PLAYERS[id].tmp = tmp
 		end
 	end
+
 	local file = io.open(dir .. "saves/players.lua", 'w+') or io.tmpfile()
+
 	file:write("-- PLAYERCACHE --\n\n")
 	for k, v in pairs(PLAYERCACHE) do
 		local text = "PLAYERCACHE[" .. table.val_to_str(k) .. "] = " .. table.val_to_str(v) .. "\n"
@@ -267,6 +275,7 @@ function saveserver()
 		local text = "GLOBAL[" .. table.val_to_str(k) .. "] = " .. table.val_to_str(v) .. "\n"
 		file:write(text)
 	end
+
 	file:close()
 end
 
@@ -294,17 +303,23 @@ function loadplayer(id)
 		else
 			PLAYERS[id] = deepcopy(CONFIG.PLAYERINIT)
 		end
+		
 		PLAYERCACHE[player(id, "usgn")] = PLAYERS[id]
 	else
 		PLAYERS[id] = deepcopy(CONFIG.PLAYERINIT)
 	end
+
 	return true
 end
 
 function saveplayer(id)
 	if player(id, "usgn") and player(id, "usgn") ~= 0 then
-		PLAYERCACHE[player(id, "usgn")] = PLAYERS[id]
+		local playerCache = deepcopy(PLAYERS[id])
+		playerCache.tmp = nil
+
+		PLAYERCACHE[player(id, "usgn")] = playerCache
 	end
+
 	return true
 end
 
@@ -464,6 +479,7 @@ function addexp(id, exp)
 		parse("sv_sound2 " .. id .. " fun/Victory_Fanfare.ogg")
 	end
 	updateHUD(id)
+	PLAYERS[id].tmp.images.expBar:update()
 	return true
 end
 
@@ -756,9 +772,10 @@ end
 
 function eat(id, itemslot, itemid, equip)
 	radiusmsg(player(id,"name") .. " eats " .. ITEMS[itemid].article .. " " .. ITEMS[itemid].name .. ".", player(id,"x"), player(id,"y"), 384)
-	local health = player(id, "health") + ITEMS[itemid].food()
+	local health = PLAYERS[id].HP + ITEMS[itemid].food()
 	parse("sethealth " .. id .. " " .. health)
 	PLAYERS[id].HP = health
+	PLAYERS[id].tmp.images.hpBar:update()
 	destroyitem(id, itemslot)
 end
 

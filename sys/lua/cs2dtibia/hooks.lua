@@ -5,10 +5,51 @@ function EXPjoin(id)
 	else
 		print('-- unable to load!')
 	end
-	PLAYERS[id].tmp = {hp = 100, atk = 1, def = 1, spd = 0, usgn = player(id, "usgn"), equip = {}, exhaust = {}}
+
+	PLAYERS[id].tmp = {
+		hp = 100, 
+		atk = 1, 
+		def = 1, 
+		spd = 0, 
+		usgn = player(id, "usgn"), 
+		equip = {}, 
+		exhaust = {},
+
+		images = {
+			expBar = {
+				fill = image('gfx/weiwen/hud/wide_bar.png', 174, 478, 2, id),
+				overlay = image('gfx/weiwen/hud/wide_bar_overlay.png', 174, 478, 2, id),
+				update = function(self)
+					local xpRatio = PLAYERS[id].Experience / CONFIG.EXP.CALC(PLAYERS[id].Level + 1)
+
+					imagescale(self.fill, xpRatio, 1)
+
+					hudtxt2(id, 100, "Lv "..PLAYERS[id].Level, "255255255", 184, 466, 0)
+					hudtxt2(id, 101, "XP "..PLAYERS[id].Experience.." / "..CONFIG.EXP.CALC(PLAYERS[id].Level + 1).." ("..math.floor(xpRatio * 100, 2).."%)", "255255255", 244, 466, 0)
+				end
+			},
+
+			hpBar = {
+				fill = image('gfx/weiwen/hud/bar.png', 174, 478 - 24, 2, id),
+				overlay = image('gfx/weiwen/hud/bar_overlay.png', 174, 478 - 24, 2, id),
+				update = function(self)
+					imagescale(self.fill, PLAYERS[id].HP / PLAYERS[id].tmp.hp, 1)
+
+					hudtxt2(id, 102, PLAYERS[id].HP.." / "..PLAYERS[id].tmp.hp, "255255255", 184, 442, 0)
+				end
+			}
+		}
+	}
+
+	imagecolor(PLAYERS[id].tmp.images.expBar.fill, 255, 155, 0)
+	imagecolor(PLAYERS[id].tmp.images.hpBar.fill, 255, 0, 0)
+
+	PLAYERS[id].tmp.images.expBar:update()
+
 	for k, v in ipairs(CONFIG.SLOTS) do
 		PLAYERS[id].tmp.equip[k] = {}
 	end
+
 	PLAYERS[id].name = player(id, "name")
 end
 
@@ -18,7 +59,9 @@ function EXPleave(id,reason)
 		for k, v in ipairs(PLAYERS[id].tmp.equip) do
 			if v.image then freeimage(v.image) end
 		end
+
 		PLAYERS[id].tmp = nil
+
 		saveplayer(id)
 	end
 	PLAYERS[id] = nil
@@ -172,20 +215,28 @@ function EXPspawn(id)
 			PLAYERS[id].Info = {}
 		end
 	end
+
 	if PLAYERS[id].x then
 		parse("setpos " .. id .. " " .. PLAYERS[id].x*32+16 .. " " .. PLAYERS[id].y*32+16)
 	else
 		parse("setpos " .. id .. " " .. PLAYERS[id].Spawn[1] .. " " .. PLAYERS[id].Spawn[2])
 	end
+
 	updateHUD(id)
 	hudtxt2(id,0,player(id, 'usgn') ~= 0 and PLAYERS[id].name or "NOT LOGGED IN","255100100", 775, 407-CONFIG.PIXELS, 1)
+
 	local newitems, previtems = {}, {}
 	for i, v in ipairs(CONFIG.SLOTS) do
 		newitems[i] = PLAYERS[id].Equipment[i]
 		previtems[i] = 0
 	end
 	updateEQ(id, newitems, previtems)
-	sethealth(id, PLAYERS[id].HP <= 0 and 250 or PLAYERS[id].HP)
+
+	PLAYERS[id].HP = (PLAYERS[id].HP <= 0 or PLAYERS[id].HP > PLAYERS[id].tmp.hp) and PLAYERS[id].tmp.hp or PLAYERS[id].HP
+	sethealth(id, PLAYERS[id].HP)
+
+	PLAYERS[id].tmp.images.hpBar:update()
+
 	return 'x'
 end
 
@@ -221,6 +272,7 @@ function EXPsecond()
 			setscore(id, PLAYERS[id].Level)
 			setdeaths(id, id)
 		end
+
 		if PLAYERS[id] and PLAYERS[id].x then
 			local tile = gettile(PLAYERS[id].x, PLAYERS[id].y)
 			if tile.HEAL and ((tile.HEAL > 0 and tile.HOUSE) or (tile.HEAL < 0 and not tile.SAFE)) and PLAYERS[id].tmp.hp > PLAYERS[id].HP then
@@ -234,6 +286,7 @@ end
 addhook("minute","EXPminute")
 function EXPminute()
 	MINUTES = MINUTES+1
+
 	for i, v in ipairs(HOUSES) do
 		if v.owner then
 			local difftime = os.difftime(v.endtime, os.time())
@@ -262,6 +315,7 @@ function EXPminute()
 			end
 		end
 	end
+
 	if game'sv_password' == '' and MINUTES%5 == 0 then
 		saveserver()
 	end
@@ -344,48 +398,73 @@ function EXPmenu(id, title, button)
 end
 
 addhook("hit","EXPhit")
-function EXPhit(id,source,weapon,hpdmg,apdmg)
-	local HP, dmg, wpnName, name = player(id, "health")
-	if hpdmg <= 0 or source == 0 then
-		PLAYERS[id].HP = HP-hpdmg
+function EXPhit(id, source, weapon, hpdmg, apdmg, rawdmg, object)
+	local HP, damage, weaponName, name = PLAYERS[id].HP
+
+	if rawdmg and rawdmg <= 0 or source == 0 then
+		PLAYERS[id].HP = HP - rawdmg
+
+		PLAYERS[id].tmp.images.hpBar:update()
+
 		return
 	end
-	if type(source) == "table" then
-		if gettile(PLAYERS[id].x, PLAYERS[id].y).SAFE or gettile(PLAYERS[id].x, PLAYERS[id].y).NOMONSTERS then return 1 end
-		dmg =  math.ceil(math.random(10,20)*hpdmg*source.atk/PLAYERS[id].tmp.def/15)
-		source, wpnName = 0, source.name
-		--print(wpnName .. " deals " .. dmg .. " damage to " .. player(id, "name") .. ".")
-	elseif player(source, 'health') > 0 then
-		if id == source then return 1 end
-		if inarray({400, 401, 402, 403, 404}, PLAYERS[source].Equipment[7]) then message(source, "You may not attack on a horse.") return 1 end
-		if gettile(PLAYERS[id].x, PLAYERS[id].y).SAFE or gettile(PLAYERS[source].x, PLAYERS[source].y).SAFE or gettile(PLAYERS[id].x, PLAYERS[id].y).NOPVP or gettile(PLAYERS[source].x, PLAYERS[source].y).NOPVP then message(source, "You may not attack someone in a SAFE or PVP disabled area.") return 1 end
+
+	if type(source) == "table" then -- if source is a monster
+		if gettile(PLAYERS[id].x, PLAYERS[id].y).SAFE or gettile(PLAYERS[id].x, PLAYERS[id].y).NOMONSTERS then 
+			return 1 
+		end
+
+		damage = math.ceil(math.random(10, 20) * hpdmg * source.atk / PLAYERS[id].tmp.def / 15)
+		source, weaponName = 0, source.name
+	elseif source > 0 then -- if source is a player
+		if id == source then
+			return 1 
+		end
+
+		if inarray({400, 401, 402, 403, 404}, PLAYERS[source].Equipment[7]) then 
+			message(source, "You may not attack on a horse.") 
+			return 1 
+		end
+
+		if gettile(PLAYERS[id].x, PLAYERS[id].y).SAFE or gettile(PLAYERS[source].x, PLAYERS[source].y).SAFE or gettile(PLAYERS[id].x, PLAYERS[id].y).NOPVP or gettile(PLAYERS[source].x, PLAYERS[source].y).NOPVP then 
+			message(source, "You may not attack someone in a SAFE or PVP disabled area.") 
+			return 1 
+		end
+
 		if not PLAYERS[id].Tutorial.hit then
 			message(id, "A player is attacking you! You can fight back by swinging your weapon at him.", "255128000")
 			PLAYERS[id].Tutorial.hit = true
 		end
+		
 		local atk = PLAYERS[source].tmp.atk
 		local def = PLAYERS[id].tmp.def
 		if weapon == 251 then
-			dmg = math.ceil(2500/math.random(80,120))
-			wpnName = 'rune'
+			damage = math.ceil(2500/math.random(80,120))
+			weaponName = 'rune'
 		elseif weapon == 46 then
-			dmg = math.ceil(500/math.random(80,120))
-			wpnName = 'firewave'
+			damage = math.ceil(500/math.random(80,120))
+			weaponName = 'firewave'
 		else
-			local dmgMul = ((PLAYERS[id].Level+50)*atk/def)/math.random(60,140)
-			dmg = math.ceil(20*dmgMul)
-			wpnName = PLAYERS[source].Equipment[3] and ITEMS[PLAYERS[source].Equipment[3]].name or 'dagger'
+			local damageMultiplier = ((PLAYERS[id].Level + 50) * atk / def) / math.random(60,140)
+			damage = math.ceil(20 * damageMultiplier)
+			weaponName = PLAYERS[source].Equipment[3] and ITEMS[PLAYERS[source].Equipment[3]].name or 'dagger'
 		end
-		--print(player(source, "name") .. " deals " .. dmg .. " damage to " .. player(id, "name") .. ".")
+
+		-- print(player(source, "name") .. " deals " .. dmg .. " damage to " .. player(id, "name") .. ".")
 	end
-	local resultHP = HP-dmg
+
+	local resultHP = HP - damage
 	if resultHP > 0 then
-		sethealth(id,resultHP)
+		sethealth(id, resultHP)
+
 		parse('effect "colorsmoke" ' .. player(id, "x") .. ' ' .. player(id, "y") .. ' 5 16 192 0 0')
 	else
-		parse('customkill ' .. source .. ' "' .. wpnName .. '" ' .. id)
+		parse('customkill ' .. source .. ' "' .. weaponName .. '" ' .. id)
 	end
+
 	PLAYERS[id].HP = resultHP
+
+	PLAYERS[id].tmp.images.hpBar:update()
 	return 1
 end
 
