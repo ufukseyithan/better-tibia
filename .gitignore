@@ -2,6 +2,16 @@ bots
 help
 logos
 screens
+
+mods/*/
+!mods/weiwen
+
+gfx/*/
+!gfx/weiwen
+
+sfx/*/
+!sfx/weiwen
+
 changelog.txt
 CS2D -directx.bat
 CS2D -fullscreen.bat
