@@ -7,15 +7,17 @@ mods/*
 !mods/weiwen
 
 maps/*
-!maps/rgb_mapb.map
+!maps/rpg_mapb.map
 
 gfx/*
 !gfx/weiwen
 
 sfx/*
-!sfx/weiwen/
+!sfx/weiwen
 
 sys/*
+!sys/lua
+sys/lua/*
 !sys/lua/cs2dtibia
 
 changelog.txt
