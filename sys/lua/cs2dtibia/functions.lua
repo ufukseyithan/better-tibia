@@ -469,8 +469,8 @@ end
 
 function updateHUD(id)
 	for i, v in ipairs(CONFIG.STATS) do
-		hudtxt2(id, #CONFIG.STATS+i, v, '255255255', 510, 407+(i-1)*CONFIG.PIXELS, 0)
-		hudtxt2(id, i, PLAYERS[id][v], '255255000', 610, 407+(i-1)*CONFIG.PIXELS, 1)
+		hudtxt2(id, #CONFIG.STATS+i, v, '255255255', 720, 407+(i-1)*CONFIG.PIXELS, 0)
+		hudtxt2(id, i, PLAYERS[id][v], '255255000', 810, 407+(i-1)*CONFIG.PIXELS, 1)
 	end
 end
 

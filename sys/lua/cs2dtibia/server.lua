@@ -76,7 +76,7 @@ end
 PLAYERS = {}
 PLAYERCACHE = {}
 
-HUDImage = image('gfx/weiwen/1x1.png', 565, 407+#CONFIG.STATS*CONFIG.PIXELS/2, 2)
+HUDImage = image('gfx/weiwen/1x1.png', 775, 407+#CONFIG.STATS*CONFIG.PIXELS/2, 2)
 imagescale(HUDImage, 130,CONFIG.PIXELS+#CONFIG.STATS*CONFIG.PIXELS)
 imagealpha(HUDImage, 0.5)
 
@@ -131,9 +131,15 @@ if file then
 end
 file = nil
 
+
+-- Settings
 parse("sv_password " .. CONFIG.PASSWORD)
 parse("sv_daylighttime 210")
+parse("sv_gm 1")
 
+parse("mp_hudscale 1")
+parse("mp_hud 64")
+parse("mp_radar 0")
 parse("mp_infammo 1")
 parse("mp_deathdrop 4")
 

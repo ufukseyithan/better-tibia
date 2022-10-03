@@ -31,7 +31,7 @@ function EXPname(id, oldname, newname)
 		return 1
 	end
 	PLAYERS[id].name = newname
-	hudtxt2(id,0,player(id, 'usgn') ~= 0 and newname or "NOT LOGGED IN","255100100", 565, 407-CONFIG.PIXELS, 1)
+	hudtxt2(id,0,player(id, 'usgn') ~= 0 and newname or "NOT LOGGED IN","255100100", 775, 617-CONFIG.PIXELS, 1)
 	return
 end
 
@@ -73,7 +73,7 @@ function EXPmovetile(id,x,y)
 			message(id, "You have stumbled upon something. Press the drop weapon button (default G) to pick it up.", "255128000")
 		end
 	end
-	hudtxt2(id, CONFIG.HUDTXT.SAFE, (tile.SAFE and "SAFE") or (tile.NOMONSTERSPVP and "NO MONSTERS") or (tile.NOPVP and "NO PVP") or (tile.PVP and "DEATHMATCH") or "","255064000", 320, 200, 1)
+	hudtxt2(id, CONFIG.HUDTXT.SAFE, (tile.SAFE and "SAFE") or (tile.NOMONSTERSPVP and "NO MONSTERS") or (tile.NOPVP and "NO PVP") or (tile.PVP and "DEATHMATCH") or "","255064000", 425, 200, 1)
 	if not PLAYERS[id].Tutorial.safe then
 		if not tile.SAFE then
 			message(id, "You have left a SAFE zone. From now, you will be able to both damage and be damaged.", "255128000")
@@ -178,7 +178,7 @@ function EXPspawn(id)
 		parse("setpos " .. id .. " " .. PLAYERS[id].Spawn[1] .. " " .. PLAYERS[id].Spawn[2])
 	end
 	updateHUD(id)
-	hudtxt2(id,0,player(id, 'usgn') ~= 0 and PLAYERS[id].name or "NOT LOGGED IN","255100100", 565, 407-CONFIG.PIXELS, 1)
+	hudtxt2(id,0,player(id, 'usgn') ~= 0 and PLAYERS[id].name or "NOT LOGGED IN","255100100", 775, 407-CONFIG.PIXELS, 1)
 	local newitems, previtems = {}, {}
 	for i, v in ipairs(CONFIG.SLOTS) do
 		newitems[i] = PLAYERS[id].Equipment[i]
@@ -215,7 +215,7 @@ end
 addhook("second","EXPsecond")
 function EXPsecond()
 	updateTime()
-	
+
 	for _, id in ipairs(player(0, 'table')) do
 		if player(id, 'health') > 0 and PLAYERS[id] then
 			setscore(id, PLAYERS[id].Level)
