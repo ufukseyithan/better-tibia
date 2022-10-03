@@ -215,6 +215,7 @@ end
 addhook("second","EXPsecond")
 function EXPsecond()
 	updateTime()
+	
 	for _, id in ipairs(player(0, 'table')) do
 		if player(id, 'health') > 0 and PLAYERS[id] then
 			setscore(id, PLAYERS[id].Level)

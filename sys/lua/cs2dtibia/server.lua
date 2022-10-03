@@ -80,13 +80,9 @@ HUDImage = image('gfx/weiwen/1x1.png', 565, 407+#CONFIG.STATS*CONFIG.PIXELS/2, 2
 imagescale(HUDImage, 130,CONFIG.PIXELS+#CONFIG.STATS*CONFIG.PIXELS)
 imagealpha(HUDImage, 0.5)
 
-SKY = image('gfx/weiwen/1x1.png',320,240,2)
-imagescale(SKY,640,480)
-imagecolor(SKY,0,0,32)
-
 MINUTES = 0
 GLOBAL = {}
-GLOBAL.TIME = 0
+GLOBAL.TIME = 480
 GLOBAL.RAIN = 0
 
 dofile(dir .. 'functions.lua')
@@ -98,8 +94,6 @@ if CONFIG.MAXMONSTERS > 0 then
 	dofile(dir .. 'monsters.lua')
 end
 dofile(dir .. 'hooks.lua')
-
-HUDRadar = image("gfx/weiwen/pokeball.png", 53, 53, 2)
 
 TMPGROUNDITEMS = {}
 TMPHOUSES = {}
@@ -137,8 +131,10 @@ if file then
 end
 file = nil
 
+parse("sv_password " .. CONFIG.PASSWORD)
+parse("sv_daylighttime 210")
+
 parse("mp_infammo 1")
 parse("mp_deathdrop 4")
-parse("sv_password " .. CONFIG.PASSWORD)
 
 print('initialisation completed!')

@@ -309,7 +309,8 @@ function saveplayer(id)
 end
 
 function updateTime(t)
-	GLOBAL.TIME = t or (GLOBAL.TIME + 1)%1440
+	GLOBAL.TIME = t or (GLOBAL.TIME + 1) % 1440
+
 	if GLOBAL.RAIN == 0 then
 		if math.random(480) == 1 then
 			GLOBAL.RAIN = 1
@@ -333,11 +334,12 @@ function updateTime(t)
 			parse("trigger rain")
 		end
 	end
+
 	local text = string.format("%02d:%02d", math.floor(GLOBAL.TIME/60),tostring(GLOBAL.TIME%60))
 	ITEMS[3].desc = "The time is ".. text .."."
-	imagealpha(SKY, math.max(
-					math.abs(
-					math.sin(GLOBAL.TIME/1440*math.pi+1.5)), 0.5)-0.5)
+
+	parse("sv_daylighttime "..GLOBAL.TIME/4)
+
 	return GLOBAL.TIME
 end
 
