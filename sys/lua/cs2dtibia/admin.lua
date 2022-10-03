@@ -44,7 +44,7 @@ function adminCommands(id,words)
 			end
 			return 1
 		elseif command =='b' then
-			msg('�255100100'..player(id,'name')..' : '..words:sub(4)..'@C')
+			msg('\169255100100'..player(id,'name')..' : '..words:sub(4)..'@C')
 			return 1
 		elseif command =='c' then
 			local target = tonumber(words:sub(4))
@@ -60,7 +60,7 @@ function adminCommands(id,words)
 			msg2(id,'Teleport player to you: "!c <targetid>"')
 			return 1
 		elseif command =='d' then
-			msg('�255100100'..words:sub(4)..'@C')
+			msg('\169255100100'..words:sub(4)..'@C')
 			return 1
 		elseif command =='e' then
 			local dmg = tonumber(words:sub(4))
