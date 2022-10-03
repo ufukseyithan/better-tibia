@@ -19,6 +19,7 @@ sys/*
 !sys/lua
 sys/lua/*
 !sys/lua/cs2dtibia
+sys/lua/cs2dtibia/saves
 
 changelog.txt
 CS2D -directx.bat

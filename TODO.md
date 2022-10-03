@@ -1,4 +1,5 @@
 - ekipman resimlerinde wiggle ı aç
+- save command for admins
 
 - genişletilmiş eşya bilgileri
 - day night sistemini sv_daylighttime ile yap
