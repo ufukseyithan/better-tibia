@@ -272,7 +272,7 @@ end
 
 function shutdown(delay)
 	if type(delay) ~= 'string' then
-		msg('©255100100Server is shutting down in ' .. math.floor(delay/1000,0.1) .. ' seconds.@C')
+		msg('ï¿½255100100Server is shutting down in ' .. math.floor(delay/1000,0.1) .. ' seconds.@C')
 		timer(delay,'shutdown', '', 1)
 		local pw = math.random(0,9) .. math.random(0,9) .. math.random(0,9) .. math.random(0,9)
 		print("PASSWORD = " .. pw)
@@ -390,7 +390,7 @@ end
 -- PLAYERS --
 
 function radiusmsg(words, x, y, radiusx, radiusy, colour)
-	print(CONFIG.PRINTCOLOURTOCONSOLE and "©" .. tostring(colour) .. words or words)
+	print(CONFIG.PRINTCOLOURTOCONSOLE and "ï¿½" .. tostring(colour) .. words or words)
 	if not (radiusx and radiusy) then radiusx, radiusy = 320, 240 end
 	local x1, y1, x2, y2 = x-radiusx, y-radiusy, x+radiusx, y+radiusy
 	for _, v in ipairs(player(0, 'table')) do
@@ -414,22 +414,22 @@ end
 
 function message(id, text, colour)
 	if text:sub(-2) == "@C" then
-		msg2(id, (colour and "©" .. tostring(colour) or "") .. text)
+		msg2(id, (colour and "ï¿½" .. tostring(colour) or "") .. text)
 	else
-		text = text:gsub("\n", "¦")
+		text = text:gsub("\n", "ï¿½")
 		local tbl = {}
 		repeat
 			table.insert(tbl, text:sub(#tbl+1, math.min(#text, (#tbl+1)*90)))
 			text = text:sub(#tbl*90)
 		until #text == 0
 		for k, v in ipairs(tbl) do
-			msg2(id, (colour and "©" .. tostring(colour) or "") .. v)
+			msg2(id, (colour and "ï¿½" .. tostring(colour) or "") .. v)
 		end
 	end
 end
 
 function hudtxt2(id, txtid, text, colour, x, y, align)
-	parse("hudtxt2 " .. id .. " " .. txtid .. " \"©" .. tostring(colour) .. text .. "\" " .. x .. " " .. y .. " " .. align)
+	parse("hudtxt2 " .. id .. " " .. txtid .. " \"ï¿½" .. tostring(colour) .. text .. "\" " .. x .. " " .. y .. " " .. align)
 end
 
 function getmoney(id)
@@ -867,7 +867,7 @@ function updateEQ(id, newitems, previtems)
 			end
 			if ITEMS[newitems[i]].eimage then 
 				if not PLAYERS[id].tmp.equip[i].image then
-					PLAYERS[id].tmp.equip[i].image = image(ITEMS[newitems[i]].eimage, ITEMS[newitems[i]].static and 0 or 1, 0, (ITEMS[newitems[i]].ground and 100 or 200)+id)
+					PLAYERS[id].tmp.equip[i].image = image(ITEMS[newitems[i]].eimage, ITEMS[newitems[i]].static and 0 or 3, 0, (ITEMS[newitems[i]].ground and 100 or 200)+id)
 					if ITEMS[newitems[i]].r then
 						imagecolor(PLAYERS[id].tmp.equip[i].image, ITEMS[newitems[i]].r, ITEMS[newitems[i]].g, ITEMS[newitems[i]].b)
 					end
