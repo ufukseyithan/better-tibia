@@ -1,1 +1,0 @@
-dofile('sys/lua/cs2dtibia/server.lua')
