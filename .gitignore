@@ -3,13 +3,13 @@ help
 logos
 screens
 
-mods/*/
+mods/*
 !mods/weiwen
 
-gfx/*/
+gfx/*
 !gfx/weiwen
 
-sfx/*/
+sfx/*
 !sfx/weiwen
 
 changelog.txt
