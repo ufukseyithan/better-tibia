@@ -770,12 +770,19 @@ end
 
 -- EQUIP --
 
+function setHealth(id, value)
+	local maxHp = PLAYERS[id].tmp.hp
+
+	PLAYERS[id].HP = math.max(0, math.min(maxHp, value))
+	sethealth(id, PLAYERS[id].HP)
+
+	PLAYERS[id].tmp.images.hpBar:update()
+end
+
 function eat(id, itemslot, itemid, equip)
 	radiusmsg(player(id,"name") .. " eats " .. ITEMS[itemid].article .. " " .. ITEMS[itemid].name .. ".", player(id,"x"), player(id,"y"), 384)
 	local health = PLAYERS[id].HP + ITEMS[itemid].food()
-	parse("sethealth " .. id .. " " .. health)
-	PLAYERS[id].HP = health
-	PLAYERS[id].tmp.images.hpBar:update()
+	setHealth(id, health)
 	destroyitem(id, itemslot)
 end
 
@@ -913,7 +920,7 @@ function updateEQ(id, newitems, previtems)
 	local temphp = player(id, "health")
 	parse("setmaxhealth " .. id .. " " .. PLAYERS[id].tmp.hp)
 	parse("speedmod " .. id .. " " .. PLAYERS[id].tmp.spd)
-	parse("sethealth " .. id .. " " .. temphp)
+	sethealth(id, temphp)
 end
 
 -- END OF EQUIP --

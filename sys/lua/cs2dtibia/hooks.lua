@@ -276,8 +276,7 @@ function EXPsecond()
 		if PLAYERS[id] and PLAYERS[id].x then
 			local tile = gettile(PLAYERS[id].x, PLAYERS[id].y)
 			if tile.HEAL and ((tile.HEAL > 0 and tile.HOUSE) or (tile.HEAL < 0 and not tile.SAFE)) and PLAYERS[id].tmp.hp > PLAYERS[id].HP then
-				PLAYERS[id].HP = player(id, "health") + math.min(10, tile.HEAL)
-				sethealth(id, PLAYERS[id].HP)
+				setHealth(id, PLAYERS[id].HP + math.min(10, tile.HEAL))
 			end
 		end
 	end
@@ -402,10 +401,7 @@ function EXPhit(id, source, weapon, hpdmg, apdmg, rawdmg, object)
 	local HP, damage, weaponName, name = PLAYERS[id].HP
 
 	if rawdmg and rawdmg <= 0 or source == 0 then
-		PLAYERS[id].HP = HP - rawdmg
-
-		PLAYERS[id].tmp.images.hpBar:update()
-
+		setHealth(id, HP - rawdmg)
 		return
 	end
 
@@ -455,16 +451,12 @@ function EXPhit(id, source, weapon, hpdmg, apdmg, rawdmg, object)
 
 	local resultHP = HP - damage
 	if resultHP > 0 then
-		sethealth(id, resultHP)
+		setHealth(id, resultHP)
 
 		parse('effect "colorsmoke" ' .. player(id, "x") .. ' ' .. player(id, "y") .. ' 5 16 192 0 0')
 	else
 		parse('customkill ' .. source .. ' "' .. weaponName .. '" ' .. id)
 	end
-
-	PLAYERS[id].HP = resultHP
-
-	PLAYERS[id].tmp.images.hpBar:update()
 	return 1
 end
 
