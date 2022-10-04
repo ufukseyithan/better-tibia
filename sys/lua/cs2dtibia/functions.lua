@@ -415,6 +415,18 @@ function setHealth(id, value)
 	PLAYERS[id].tmp.images.hpBar:update()
 end
 
+function showTutorial(id, name, msg, msg2)
+	if not PLAYERS[id].Tutorial[name] then
+		message(id, msg, "255128000")
+
+		if message2 then
+			message(id, msg2, "255128000")
+		end
+
+		PLAYERS[id].Tutorial[name] = true
+	end
+end
+
 function radiusmsg(words, x, y, radiusx, radiusy, colour)
 	print(CONFIG.PRINTCOLOURTOCONSOLE and "\169" .. tostring(colour) .. words or words)
 	if not (radiusx and radiusy) then radiusx, radiusy = 320, 240 end

@@ -64,18 +64,20 @@ function EXPleave(id,reason)
 
 		saveplayer(id)
 	end
+
 	PLAYERS[id] = nil
 end
 
 addhook("name","EXPname")
-function EXPname(id, oldname, newname)
-	local check = newname:lower()
+function EXPname(id, oldName, newName)
+	local check = newName:lower()
 	if (check:find'admin' or check:find'gm') and not isAdmin(id) then
 		return 1
 	end
-	PLAYERS[id].name = newname
-	hudtxt2(id,0,player(id, 'usgn') ~= 0 and newname or "NOT LOGGED IN","255100100", 775, 617-CONFIG.PIXELS, 1)
-	return
+
+	PLAYERS[id].name = newName
+	
+	hudtxt2(id, 0, player(id, 'usgn') ~= 0 and newName or "NOT LOGGED IN","255100100", 775, 617-CONFIG.PIXELS, 1)
 end
 
 addhook("walkover","EXPwalkover")
@@ -88,18 +90,18 @@ function EXPmovetile(id,x,y)
 	if entity(x, y, "typename") == "Info_T" or entity(x, y, "typename") == "Info_CT" then
 		return
 	end
+
 	if inarray(CONFIG.WATERTILES, tile(x, y, 'frame')) or PLAYERS[id].tmp.paralyse then
 		if not (PLAYERS[id].Equipment[7] and ITEMS[PLAYERS[id].Equipment[7]].water) then
-			setpos(id,PLAYERS[id].x*32+16,PLAYERS[id].y*32+16)
+			setpos(id, PLAYERS[id].x*32+16, PLAYERS[id].y*32+16)
 			return
 		end
 	end
+
 	local tile = gettile(x, y)
 	if tile.HOUSE then
-		if not PLAYERS[id].Tutorial.house then
-			message(id, "This is a house. For more information about houses, type !house", "255128000")
-			PLAYERS[id].Tutorial.house = true
-		end
+		showTutorial(id, "house", "This is a house. For more information about houses, type !house")
+
 		house = HOUSES[tile.HOUSE]
 		if not house.owner then
 			setpos(id, PLAYERS[id].x*32+16, PLAYERS[id].y*32+16)
@@ -111,41 +113,43 @@ function EXPmovetile(id,x,y)
 			return
 		end
 	end
+
 	if not PLAYERS[id].Tutorial.pick then
 		if GROUNDITEMS[y][x][1] then
 			message(id, "You have stumbled upon something. Press the drop weapon button (default G) to pick it up.", "255128000")
 		end
 	end
+
 	hudtxt2(id, CONFIG.HUDTXT.SAFE, (tile.SAFE and "SAFE") or (tile.NOMONSTERSPVP and "NO MONSTERS") or (tile.NOPVP and "NO PVP") or (tile.PVP and "DEATHMATCH") or "","255064000", 425, 200, 1)
-	if not PLAYERS[id].Tutorial.safe then
-		if not tile.SAFE then
-			message(id, "You have left a SAFE zone. From now, you will be able to both damage and be damaged.", "255128000")
-			PLAYERS[id].Tutorial.safe = true
-		end
-	elseif not PLAYERS[id].Tutorial.nomonsters then
-		if tile.NOMONSTERS and not tile.PVP then
-			message(id, "You have entered a NO MONSTERS zone. No monsters will spawn here. However, PVP is still allowed!", "255128000")
-			PLAYERS[id].Tutorial.nomonsters = true
-		end
-	elseif not PLAYERS[id].Tutorial.nopvp then
-		if tile.NOPVP then
-			message(id, "You have entered a NO PVP zone. PVP is disabled here, but monsters can still spawn.", "255128000")
-			PLAYERS[id].Tutorial.nopvp = true
-		end
-	elseif not PLAYERS[id].Tutorial.pvp then
-		if tile.PVP then
-			message(id, "You have entered a DEATHMATCH zone. In this area, you may fight for money. If you die here, you will drop a maximum of $100.", "255128000")
-			PLAYERS[id].Tutorial.pvp = true
-		end
+
+	if not tile.SAFE then
+		showTutorial(id, "safe", "You have left a SAFE zone. From now, you will be able to both damage and be damaged.")
 	end
+
+	if tile.NOMONSTERS and not tile.PVP then
+		showTutorial(id, "nomonsters", "You have entered a NO MONSTERS zone. No monsters will spawn here. However, PVP is still allowed!")
+	end
+
+	if tile.NOPVP then
+		showTutorial(id, "nopvp", "You have entered a NO PVP zone. PVP is disabled here, but monsters can still spawn.")
+	end
+
+	if tile.PVP then
+		showTutorial(id, "pvp", "You have entered a DEATHMATCH zone. In this area, you may fight for money. If you die here, you will drop a maximum of $100.")
+	end
+
 	PLAYERS[id].x, PLAYERS[id].y = x, y
 end
 
 addhook("say","EXPsay",-10)
 function EXPsay(id,words)
-	if PLAYERS[id].tmp.exhaust.talk then return 1 end
+	if PLAYERS[id].tmp.exhaust.talk then 
+		return 1 
+	end
+
 	PLAYERS[id].tmp.exhaust.talk = true
 	timer(CONFIG.EXHAUST.TALK, "rem.talkExhaust", tostring(id))
+
 	if words:sub(1,1) == '!' then
 		command = words:sub(2):split(' ')
 		local func = COMMANDS[command[1]]
@@ -155,11 +159,9 @@ function EXPsay(id,words)
 		end
 		return 1
 	end
-	if not PLAYERS[id].Tutorial.say then
-		message(id, "Talking! I don't think you need a tutorial on that, but just to let you know, whatever you say can only be heard by people around you. You can yell by ending your sentence with '!'. Similarly, ", "255128000")
-		message(id, "you can whisper by starting your sentence with '::'. You can colour-code your sentence, too, by prefixing with ^[0-9A-Z] e.g. \"^0Hello!\" will make you yell out Hello! in white font.", "255128000")
-		PLAYERS[id].Tutorial.say = true
-	end
+
+	showTutorial(id, "say", "Talking! I don't think you need a tutorial on that, but just to let you know, whatever you say can only be heard by people around you. You can yell by ending your sentence with '!'. Similarly, ", "you can whisper by starting your sentence with '::'. You can colour-code your sentence, too, by prefixing with ^[0-9A-Z] e.g. \"^0Hello!\" will make you yell out Hello! in white font.")
+
 	local picture = 'gfx/weiwen/talk.png'
 	words = words:gsub('%s+', ' ')
 	local radiusx, radiusy, colour, action
@@ -175,6 +177,7 @@ function EXPsay(id,words)
 		action = "whispers"
 		radiusx, radiusy = 48, 48
 	end
+
 	if words:find':D' or words:find'=D' or words:find':)' or words:find'=)' or words:find'%(:' or words:find'%(=' or words:find'xD' or words:find'lol' then
 		picture = 'gfx/weiwen/happy.png'
 	elseif words:find'>:%(' or words:find':@' or words:find'fuck' then
@@ -183,17 +186,20 @@ function EXPsay(id,words)
 		picture = 'gfx/weiwen/sad.png'
 	end
 	timer(1000, "freeimage", image(picture, 0, 0, 200+id))
+
 	local code = words:sub(1,2):lower()
 	if code:sub(1,1) == '^' then
 		colour = CONFIG.COLOURS[tonumber(code:sub(2,2), 36)]
 		words = words:sub(3)
 	end
+
 	if player(id,"team") == 0 then
 		radiusx, radiusy = 0, 0
 	end
 	local text = string.format("%s %s %s : %s", os.date'%X', player(id, "name"), action or "says", words)
 	--text = os.date'%X' .. " " .. player(id, "name") .. " " .. (action or "says") .. " : " .. words
 	radiusmsg(text, player(id, 'x'), player(id, 'y'), radiusx, radiusy, colour or 255255100)
+	
 	return 1
 end
 
