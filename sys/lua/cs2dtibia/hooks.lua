@@ -1,9 +1,9 @@
 addhook("join","EXPjoin")
 function EXPjoin(id)
 	if loadplayer(id) then
-		print('-- loaded!')
+		print('Loaded player: '..player(id, "name"))
 	else
-		print('-- unable to load!')
+		print('Couldn\'t load player: '..player(id, "name"))
 	end
 
 	PLAYERS[id].tmp = {
