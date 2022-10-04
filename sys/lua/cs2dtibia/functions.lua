@@ -406,6 +406,15 @@ end
 
 -- PLAYERS --
 
+function setHealth(id, value)
+	local maxHp = PLAYERS[id].tmp.hp
+
+	PLAYERS[id].HP = math.max(0, math.min(maxHp, value))
+	sethealth(id, PLAYERS[id].HP)
+
+	PLAYERS[id].tmp.images.hpBar:update()
+end
+
 function radiusmsg(words, x, y, radiusx, radiusy, colour)
 	print(CONFIG.PRINTCOLOURTOCONSOLE and "\169" .. tostring(colour) .. words or words)
 	if not (radiusx and radiusy) then radiusx, radiusy = 320, 240 end
@@ -769,15 +778,6 @@ end
 
 
 -- EQUIP --
-
-function setHealth(id, value)
-	local maxHp = PLAYERS[id].tmp.hp
-
-	PLAYERS[id].HP = math.max(0, math.min(maxHp, value))
-	sethealth(id, PLAYERS[id].HP)
-
-	PLAYERS[id].tmp.images.hpBar:update()
-end
 
 function eat(id, itemslot, itemid, equip)
 	radiusmsg(player(id,"name") .. " eats " .. ITEMS[itemid].article .. " " .. ITEMS[itemid].name .. ".", player(id,"x"), player(id,"y"), 384)
