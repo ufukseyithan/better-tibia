@@ -6,7 +6,7 @@ CONFIG = {
 	WELCOMEMSG = "Welcome to " .. game'sv_name' .. ", %s!@C", 
 	
 	-- maximum number of monsters on the map at one time. if set to 0, monsters.lua is not loaded at all.
-	MAXMONSTERS = 12, 
+	MAXMONSTERS = 192, 
 	-- maximum inventory items a player can carry.
 	MAXITEMS = 50, 
 	-- maximum height an item stack on the ground can be (they can be as high as you want, but only the top few will be shown when this is set).
